@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 import bcrypt
 import os
-import models
+from models import models
 from database import get_db
 
 load_dotenv(dotenv_path='config.env')
@@ -39,6 +39,32 @@ def authenticate_user(phone: str, password:str, db: Session = Depends(get_db)):
         return None
     return user 
 
+def checkUser(user, db: session = Depends(get_db)):
+
+    phone = db.query(models.User).filter(models.User.phone == user.phone).first()
+    
+    if phone:
+        raise HTTPException(
+            status_code = status.HTTP_403_FORBIDDEN,
+            detail = "This Phone number is already registered"
+        )
+    
+    name = db.query(models.User).filter(models.User.name == user.name).first()
+    if name:
+        raise HTTPException(
+            status_code = status.HTTP_403_FORBIDDEN,
+            detail = "This User name already registered"
+        )
+
+    bussiness_id = db.query(models.User).filter(models.User.bussiness_id == user.bussiness_id).first()    
+    if bussiness_id:
+        raise HTTPException(
+            status_code = status.HTTP_403_FORBIDDEN,
+            detail = "This Bussiness ID already registered"
+        )
+    
+    return user 
+    
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     # try:
     #     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -46,7 +72,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     # except JWTError:
     #     raise HTTPException(status_code=401, detail="Invalid token")
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) 
         user_phone:str = payload.get("phone")
         
         if user_phone is None: 
