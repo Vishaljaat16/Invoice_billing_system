@@ -1,6 +1,6 @@
 from fastapi import FastAPI 
 from fastapi.middleware.cors import CORSMiddleware
-from routes import categories_routes, auth_routes, item_routes
+from routes import categories_routes, auth_routes, item_routes, invoice_routes
 
 app = FastAPI()
 
@@ -21,6 +21,7 @@ app.add_middleware(
 app.include_router(router=auth_routes.router)
 app.include_router(router=categories_routes.router)
 app.include_router(router=item_routes.router)
+app.include_router(router=invoice_routes.router)
 
 from database import engine 
 from models.models import Base

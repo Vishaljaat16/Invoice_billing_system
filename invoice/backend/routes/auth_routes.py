@@ -64,11 +64,11 @@ def registration(user: schemas.Registration, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
 
-    # return {"message": "User Registered Successfully"}
-    raise HTTPException(
-        status_code=status.HTTP_201_CREATED,
-        detail="User Registered Successfully"
-    )
+    return {"message": "User Registered Successfully"}
+    # raise HTTPException(
+    #     status_code=status.HTTP_201_CREATED,
+    #     detail="User Registered Successfully"
+    # )
 
 
 # * ----------- importing env file for login purpose -------------
@@ -226,25 +226,3 @@ def refresh_token(request: Request, response: Response, db: Session = Depends(ge
         )
 
 
-from services.invoice_service import create_invoice_service
-from services.pdf import generate_invoice_pdf
-@router.post("/invoice",  response_model=schemas.InvoiceOut)
-def create_invoice(data: schemas.InvoiceCreate, db: Session = Depends(get_db), user=Depends(require_roles(["admin", "staff"]))):
-
-    invoice = create_invoice_service(db, data, user.bussiness_id)
-    return invoice
-    # return {
-    #     "message": f"Invoice created by {user.role}",
-    #     "invoice_id" : models.Invoice.id,
-    #     # "invoice_pdf": generate_invoice_pdf(models.Invoice.id)
-    # }
-
-
-@router.get("/reports")
-def view_reports(user=Depends(require_roles(["admin", "accountant"]))):
-    return {"message": f"Reports viewd by {user.role}"}
-
-
-@router.get('/admin')
-def admin_panel(user=Depends(require_roles(["admin"]))):
-    return {"message": "Welcome Admin"}

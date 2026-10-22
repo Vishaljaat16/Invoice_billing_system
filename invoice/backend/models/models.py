@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum as sqlEnum, Float, Boolean
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
 from schemas.schemas import UserRole
-from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = 'users'
@@ -16,6 +16,7 @@ class User(Base):
 
     categories = relationship("Categories", back_populates="users")
     items = relationship("Items", back_populates="users")
+    # customer = relationship("Customer", back_populates="users")
 
 class RefreshToken(Base):
     __tablename__ = 'refresh_tokens'
@@ -80,17 +81,19 @@ class InvoiceItem(Base):
     price = Column(Integer)
     total = Column(Integer)
 
+    item = relationship("Items")
 
 class Customer(Base):
     __tablename__ = "customer"
 
     id = Column(Integer, primary_key=True, index=True)
-    bussiness_id = Column(String(100), )
+    bussiness_id = Column(String(100))
     name = Column(String(100))
     phone = Column(String(100))
     balance = Column(Float)
 
     invoices = relationship("Invoice", back_populates="customer")
+    # users = relationship("User", back_populates="customer")
 
     class Config:
         from_attributes = True
