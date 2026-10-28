@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 
-app.include_router(router=auth_routes.router)
+app.include_router("api/",router=auth_routes.router)
 app.include_router(router=categories_routes.router)
 app.include_router(router=item_routes.router)
 app.include_router(router=invoice_routes.router)
